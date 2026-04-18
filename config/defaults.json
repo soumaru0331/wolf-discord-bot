@@ -1,0 +1,9 @@
+{
+  "dayDuration": 300,
+  "nightDuration": 120,
+  "voteDuration": 60,
+  "maxRevotes": 2,
+  "tieDeath": "random",
+  "anonymousVote": false,
+  "revealRoleOnDeath": true
+}
