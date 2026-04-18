@@ -1,0 +1,222 @@
+[
+  {
+    "id": "villager",
+    "name": "村人",
+    "team": "village",
+    "description": "特殊能力を持たない村人。投票で人狼を追放することが目的。",
+    "timing": "passive",
+    "hasTarget": false,
+    "priority": 0,
+    "winCondition": "すべての人狼を追放する",
+    "effect": "custom"
+  },
+  {
+    "id": "werewolf",
+    "name": "人狼",
+    "team": "werewolf",
+    "description": "毎晩1人を襲撃できる。昼は村人のふりをする。",
+    "timing": "night",
+    "hasTarget": true,
+    "priority": 3,
+    "winCondition": "村人陣営の人数が人狼以下になる",
+    "effect": "kill"
+  },
+  {
+    "id": "seer",
+    "name": "占い師",
+    "team": "village",
+    "description": "毎晩1人の役職（人狼か否か）を占うことができる。",
+    "timing": "night",
+    "hasTarget": true,
+    "priority": 1,
+    "winCondition": "すべての人狼を追放する",
+    "effect": "reveal_team"
+  },
+  {
+    "id": "medium",
+    "name": "霊媒師",
+    "team": "village",
+    "description": "昼の処刑後、処刑された人が人狼かどうかを知ることができる。",
+    "timing": "day",
+    "hasTarget": false,
+    "priority": 0,
+    "winCondition": "すべての人狼を追放する",
+    "effect": "reveal_team"
+  },
+  {
+    "id": "hunter",
+    "name": "狩人",
+    "team": "village",
+    "description": "毎晩1人を人狼の襲撃から守ることができる。",
+    "timing": "night",
+    "hasTarget": true,
+    "priority": 2,
+    "winCondition": "すべての人狼を追放する",
+    "effect": "protect"
+  },
+  {
+    "id": "madman",
+    "name": "狂人",
+    "team": "werewolf",
+    "description": "人狼の仲間だが、夜の会話には参加できない村人。",
+    "timing": "passive",
+    "hasTarget": false,
+    "priority": 0,
+    "winCondition": "村人陣営の人数が人狼以下になる",
+    "effect": "custom"
+  },
+  {
+    "id": "fox",
+    "name": "妖狐",
+    "team": "fox",
+    "description": "占われると呪い死するが、襲撃されても死なない。単独で勝利を目指す。",
+    "timing": "passive",
+    "hasTarget": false,
+    "priority": 0,
+    "winCondition": "ゲーム終了時まで生き残る",
+    "effect": "custom"
+  },
+  {
+    "id": "freemason",
+    "name": "共有者",
+    "team": "village",
+    "description": "互いの存在を知っている村人陣営。",
+    "timing": "passive",
+    "hasTarget": false,
+    "priority": 0,
+    "winCondition": "すべての人狼を追放する",
+    "effect": "custom"
+  },
+  {
+    "id": "big_werewolf",
+    "name": "大狼",
+    "team": "werewolf",
+    "description": "占い師に占われても人狼と表示されない特殊な人狼。",
+    "timing": "night",
+    "hasTarget": true,
+    "priority": 3,
+    "winCondition": "村人陣営の人数が人狼以下になる",
+    "effect": "kill"
+  },
+  {
+    "id": "cursed_wolf",
+    "name": "呪狼",
+    "team": "werewolf",
+    "description": "占い師に占われると占い師が死ぬ特殊な人狼。",
+    "timing": "night",
+    "hasTarget": true,
+    "priority": 3,
+    "winCondition": "村人陣営の人数が人狼以下になる",
+    "effect": "kill"
+  },
+  {
+    "id": "possessed",
+    "name": "憑依者",
+    "team": "werewolf",
+    "description": "死亡時に別の役職に変化できる狂人の一種。",
+    "timing": "death",
+    "hasTarget": false,
+    "priority": 5,
+    "winCondition": "村人陣営の人数が人狼以下になる",
+    "effect": "transform"
+  },
+  {
+    "id": "werehamster",
+    "name": "ハムスター男",
+    "team": "village",
+    "description": "占い師に占われると占い師が死ぬ村人陣営。",
+    "timing": "passive",
+    "hasTarget": false,
+    "priority": 0,
+    "winCondition": "すべての人狼を追放する",
+    "effect": "curse"
+  },
+  {
+    "id": "bodyguard",
+    "name": "ボディガード",
+    "team": "village",
+    "description": "自分の代わりに誰かを守り、自分が死ぬ可能性のある狩人の上位版。",
+    "timing": "night",
+    "hasTarget": true,
+    "priority": 2,
+    "winCondition": "すべての人狼を追放する",
+    "effect": "protect"
+  },
+  {
+    "id": "gossip",
+    "name": "おしゃべり屋",
+    "team": "village",
+    "description": "夜明けに自分の役職を全体に公開してしまう。",
+    "timing": "passive",
+    "hasTarget": false,
+    "priority": 0,
+    "winCondition": "すべての人狼を追放する",
+    "effect": "reveal_role"
+  },
+  {
+    "id": "researcher",
+    "name": "賢者",
+    "team": "village",
+    "description": "1回だけ昼に誰かの役職を確認できる。",
+    "timing": "day",
+    "hasTarget": true,
+    "priority": 0,
+    "winCondition": "すべての人狼を追放する",
+    "effect": "reveal_role"
+  },
+  {
+    "id": "cupid",
+    "name": "キューピッド",
+    "team": "village",
+    "description": "ゲーム開始時に2人を恋人にする。恋人は共に生き残ることを目指す。",
+    "timing": "start",
+    "hasTarget": true,
+    "priority": 0,
+    "winCondition": "すべての人狼を追放する（恋人として生き残ればボーナス）",
+    "effect": "custom"
+  },
+  {
+    "id": "witch",
+    "name": "魔女",
+    "team": "village",
+    "description": "1回だけ誰かを救い、1回だけ誰かを殺す薬を持つ。",
+    "timing": "night",
+    "hasTarget": true,
+    "priority": 4,
+    "winCondition": "すべての人狼を追放する",
+    "effect": "custom"
+  },
+  {
+    "id": "wolf_seer",
+    "name": "人狼占い師",
+    "team": "werewolf",
+    "description": "占い師の能力を持つ人狼。",
+    "timing": "night",
+    "hasTarget": true,
+    "priority": 1,
+    "winCondition": "村人陣営の人数が人狼以下になる",
+    "effect": "reveal_team"
+  },
+  {
+    "id": "vampire",
+    "name": "吸血鬼",
+    "team": "werewolf",
+    "description": "噛んだ相手を仲間に変える人狼の一種。",
+    "timing": "night",
+    "hasTarget": true,
+    "priority": 3,
+    "winCondition": "村人陣営の人数が人狼以下になる",
+    "effect": "transform"
+  },
+  {
+    "id": "tanner",
+    "name": "処刑人",
+    "team": "solo",
+    "description": "昼に処刑されることで単独勝利する。",
+    "timing": "passive",
+    "hasTarget": false,
+    "priority": 0,
+    "winCondition": "昼の処刑で死亡する",
+    "effect": "custom"
+  }
+]
