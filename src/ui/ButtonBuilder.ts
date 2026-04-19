@@ -75,6 +75,35 @@ export function buildNightActionButtons(
   return rows;
 }
 
+export function buildSetupButtons(): ActionRowBuilder<MessageActionRowComponentBuilder>[] {
+  const row1 = new ActionRowBuilder<MessageActionRowComponentBuilder>().addComponents(
+    new ButtonBuilder().setCustomId('setup_wolf_add').setLabel('🐺 人狼+1').setStyle(ButtonStyle.Danger),
+    new ButtonBuilder().setCustomId('setup_wolf_remove').setLabel('🐺 人狼-1').setStyle(ButtonStyle.Secondary),
+    new ButtonBuilder().setCustomId('setup_toggle_seer').setLabel('占い師').setStyle(ButtonStyle.Primary),
+    new ButtonBuilder().setCustomId('setup_toggle_hunter').setLabel('狩人').setStyle(ButtonStyle.Primary),
+    new ButtonBuilder().setCustomId('setup_toggle_medium').setLabel('霊能者').setStyle(ButtonStyle.Primary),
+  );
+  const row2 = new ActionRowBuilder<MessageActionRowComponentBuilder>().addComponents(
+    new ButtonBuilder().setCustomId('setup_toggle_madman').setLabel('狂人').setStyle(ButtonStyle.Secondary),
+    new ButtonBuilder().setCustomId('setup_toggle_fox').setLabel('妖狐').setStyle(ButtonStyle.Secondary),
+    new ButtonBuilder().setCustomId('setup_toggle_witch').setLabel('魔女').setStyle(ButtonStyle.Secondary),
+    new ButtonBuilder().setCustomId('setup_toggle_nekomata').setLabel('猫又').setStyle(ButtonStyle.Secondary),
+    new ButtonBuilder().setCustomId('setup_toggle_tanner').setLabel('処刑人').setStyle(ButtonStyle.Secondary),
+  );
+  const row3 = new ActionRowBuilder<MessageActionRowComponentBuilder>().addComponents(
+    new ButtonBuilder().setCustomId('setup_day_add').setLabel('☀️+60s').setStyle(ButtonStyle.Secondary),
+    new ButtonBuilder().setCustomId('setup_day_remove').setLabel('☀️-60s').setStyle(ButtonStyle.Secondary),
+    new ButtonBuilder().setCustomId('setup_night_add').setLabel('🌙+30s').setStyle(ButtonStyle.Secondary),
+    new ButtonBuilder().setCustomId('setup_night_remove').setLabel('🌙-30s').setStyle(ButtonStyle.Secondary),
+    new ButtonBuilder().setCustomId('setup_vote_toggle').setLabel('🗳 投票±15s').setStyle(ButtonStyle.Secondary),
+  );
+  const row4 = new ActionRowBuilder<MessageActionRowComponentBuilder>().addComponents(
+    new ButtonBuilder().setCustomId('setup_back').setLabel('← 戻る').setStyle(ButtonStyle.Secondary),
+    new ButtonBuilder().setCustomId('setup_confirm').setLabel('✅ 確定してスタート').setStyle(ButtonStyle.Success),
+  );
+  return [row1, row2, row3, row4];
+}
+
 export function buildAdminButtons(): ActionRowBuilder<MessageActionRowComponentBuilder> {
   return new ActionRowBuilder<MessageActionRowComponentBuilder>().addComponents(
     new ButtonBuilder()

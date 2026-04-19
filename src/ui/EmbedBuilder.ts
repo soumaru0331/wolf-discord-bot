@@ -18,6 +18,43 @@ export function buildWaitingEmbed(session: GameSession): EmbedBuilder {
     .setFooter({ text: '参加するには「参加」ボタンを押してください' });
 }
 
+export function buildSetupEmbed(session: GameSession): EmbedBuilder {
+  const comp = session.roleComposition;
+  const playerCount = session.players.size;
+
+  const roleLines: string[] = [];
+  let total = 0;
+  for (const [roleId, count] of comp) {
+    if (count <= 0) continue;
+    try {
+      const role = getRole(roleId);
+      roleLines.push(`${role.name} × ${count}`);
+      total += count;
+    } catch {}
+  }
+  const villagerCount = playerCount - total;
+  if (villagerCount > 0) roleLines.push(`村人 × ${villagerCount}`);
+  if (roleLines.length === 0) roleLines.push('（未設定）');
+
+  const wolfCount = comp.get('werewolf') ?? 0;
+
+  return new EmbedBuilder()
+    .setTitle('⚙️ ゲーム設定')
+    .setColor(0x5865f2)
+    .addFields(
+      { name: '👥 参加者数', value: `${playerCount}人`, inline: true },
+      { name: '🐺 人狼数', value: `${wolfCount}人`, inline: true },
+      { name: '\u200b', value: '\u200b', inline: true },
+      { name: '📋 役職内訳', value: roleLines.join('\n') },
+      { name: '⏱ 時間設定', value: [
+        `☀️ 昼の議論: **${session.settings.dayDuration}秒**`,
+        `🌙 夜の行動: **${session.settings.nightDuration}秒**`,
+        `🗳 投票時間: **${session.settings.voteDuration}秒**`,
+      ].join('\n') },
+    )
+    .setFooter({ text: '設定を確認して「確定してスタート」を押してください' });
+}
+
 export function buildDayEmbed(session: GameSession): EmbedBuilder {
   const alive = session.getAlivePlayers();
   const playerList = alive.map(p => `• <@${p.userId}>`).join('\n') || '（なし）';

@@ -19,6 +19,7 @@ export class GameSession {
   voteEngine: VoteEngine;
   nightEngine: NightEngine = new NightEngine();
   lastExecuted: string | null = null;
+  roleComposition: Map<string, number> = new Map();
 
   constructor(gameId: number, guildId: string, channelId: string, settings: GameSettings) {
     this.gameId = gameId;

@@ -32,18 +32,24 @@ export class PhaseEngine {
 
     // First day has no vote — discussion only
     if (session.day === 1) {
-      this.timer.schedule(session.settings.dayDuration * 1000, () => this.startNight(session));
+      this.timer.schedule(session.settings.dayDuration * 1000, () => {
+        this.startNight(session).catch(e => logger.error('startNight error', e));
+      });
       return;
     }
 
-    this.timer.schedule(session.settings.dayDuration * 1000, () => this.startVote(session));
+    this.timer.schedule(session.settings.dayDuration * 1000, () => {
+      this.startVote(session).catch(e => logger.error('startVote error', e));
+    });
   }
 
   async startVote(session: GameSession): Promise<void> {
     session.voteEngine.reset();
     session.refreshVoteEngine();
     await this.callback(session, { type: 'vote_start', day: session.day });
-    this.timer.schedule(session.settings.voteDuration * 1000, () => this.resolveVote(session));
+    this.timer.schedule(session.settings.voteDuration * 1000, () => {
+      this.resolveVote(session).catch(e => logger.error('resolveVote error', e));
+    });
   }
 
   async resolveVote(session: GameSession): Promise<void> {
@@ -53,7 +59,9 @@ export class PhaseEngine {
     if (isTie && session.voteEngine.canRevote() && session.settings.tieDeath === 'random') {
       session.voteEngine.startRevote(tied);
       await this.callback(session, { type: 'vote_end', executed: null, isTie: true, tied });
-      this.timer.schedule(session.settings.voteDuration * 1000, () => this.resolveVote(session));
+      this.timer.schedule(session.settings.voteDuration * 1000, () => {
+        this.resolveVote(session).catch(e => logger.error('resolveVote error', e));
+      });
       return;
     }
 
@@ -80,7 +88,9 @@ export class PhaseEngine {
     logger.info(`Game ${session.gameId} night ${session.day} started`);
 
     await this.callback(session, { type: 'night_start', day: session.day });
-    this.timer.schedule(session.settings.nightDuration * 1000, () => this.resolveNight(session));
+    this.timer.schedule(session.settings.nightDuration * 1000, () => {
+      this.resolveNight(session).catch(e => logger.error('resolveNight error', e));
+    });
   }
 
   async resolveNight(session: GameSession): Promise<void> {

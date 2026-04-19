@@ -1,7 +1,7 @@
 import type { ButtonInteraction } from 'discord.js';
 import type { GameManager } from '../game/GameManager';
-import { buildWaitingEmbed } from '../ui/EmbedBuilder';
-import { buildJoinLeaveButtons, buildStartButton } from '../ui/ButtonBuilder';
+import { buildWaitingEmbed, buildSetupEmbed } from '../ui/EmbedBuilder';
+import { buildJoinLeaveButtons, buildStartButton, buildSetupButtons } from '../ui/ButtonBuilder';
 import { getAllRoles } from '../roles/RoleHandler';
 import logger from '../utils/logger';
 
@@ -72,32 +72,74 @@ export async function handleButton(
       await interaction.reply({ content: '最低2人必要です。', ephemeral: true });
       return;
     }
-
-    // Assign roles randomly
-    const playerIds = Array.from(session.players.keys());
-    const roles = getAllRoles().filter(r => r.timing !== 'passive' || r.team === 'village' || r.team === 'werewolf');
-    const shuffled = [...roles].sort(() => Math.random() - 0.5);
-    // Ensure at least 1 werewolf
-    const wolfRoles = shuffled.filter(r => r.team === 'werewolf');
-    const otherRoles = shuffled.filter(r => r.team !== 'werewolf');
-    const assigned: string[] = [];
-    if (wolfRoles.length > 0) assigned.push(wolfRoles[0].id);
-    for (const r of otherRoles) {
-      if (assigned.length >= playerIds.length) break;
-      assigned.push(r.id);
+    // Initialize default composition
+    if (session.roleComposition.size === 0) {
+      const wolfCount = Math.max(1, Math.floor(session.players.size / 4));
+      session.roleComposition.set('werewolf', wolfCount);
+      session.roleComposition.set('seer', 1);
     }
-    while (assigned.length < playerIds.length) assigned.push('villager');
+    const embed = buildSetupEmbed(session);
+    await interaction.update({ embeds: [embed], components: buildSetupButtons() });
+    return;
+  }
 
-    assigned.sort(() => Math.random() - 0.5);
-    for (let i = 0; i < playerIds.length; i++) {
-      session.assignRole(playerIds[i], assigned[i]);
+  // Setup screen buttons
+  if (customId.startsWith('setup_')) {
+    const session = manager.getSession(guildId);
+    if (!session || session.state !== 'waiting') {
+      await interaction.reply({ content: 'ゲームが見つかりません。', ephemeral: true });
+      return;
     }
 
-    session.startGame();
-    await interaction.update({ content: 'ゲームを開始します！', components: [], embeds: [] });
+    const comp = session.roleComposition;
 
-    const phase = manager.getPhaseEngine(guildId);
-    if (phase) await phase.startDay(session);
+    if (customId === 'setup_wolf_add') {
+      comp.set('werewolf', (comp.get('werewolf') ?? 1) + 1);
+    } else if (customId === 'setup_wolf_remove') {
+      comp.set('werewolf', Math.max(1, (comp.get('werewolf') ?? 1) - 1));
+    } else if (customId.startsWith('setup_toggle_')) {
+      const roleId = customId.replace('setup_toggle_', '');
+      comp.set(roleId, comp.get(roleId) ? 0 : 1);
+    } else if (customId === 'setup_day_add') {
+      session.settings.dayDuration = Math.min(600, session.settings.dayDuration + 60);
+    } else if (customId === 'setup_day_remove') {
+      session.settings.dayDuration = Math.max(60, session.settings.dayDuration - 60);
+    } else if (customId === 'setup_night_add') {
+      session.settings.nightDuration = Math.min(300, session.settings.nightDuration + 30);
+    } else if (customId === 'setup_night_remove') {
+      session.settings.nightDuration = Math.max(30, session.settings.nightDuration - 30);
+    } else if (customId === 'setup_vote_toggle') {
+      session.settings.voteDuration = session.settings.voteDuration >= 90
+        ? 30 : session.settings.voteDuration + 15;
+    } else if (customId === 'setup_back') {
+      const waitEmbed = buildWaitingEmbed(session);
+      await interaction.update({ embeds: [waitEmbed], components: [buildJoinLeaveButtons(), buildStartButton()] });
+      return;
+    } else if (customId === 'setup_confirm') {
+      // Build final role list
+      const playerIds = Array.from(session.players.keys());
+      const assigned: string[] = [];
+      for (const [roleId, count] of comp) {
+        if (count > 0) {
+          for (let i = 0; i < count; i++) assigned.push(roleId);
+        }
+      }
+      while (assigned.length < playerIds.length) assigned.push('villager');
+      assigned.splice(playerIds.length);
+      assigned.sort(() => Math.random() - 0.5);
+      for (let i = 0; i < playerIds.length; i++) {
+        session.assignRole(playerIds[i], assigned[i]);
+      }
+      session.startGame();
+      await interaction.update({ content: '🐺 ゲームを開始します！', components: [], embeds: [] });
+      const phase = manager.getPhaseEngine(guildId);
+      if (phase) await phase.startDay(session);
+      return;
+    }
+
+    // Re-render setup screen
+    const embed = buildSetupEmbed(session);
+    await interaction.update({ embeds: [embed], components: buildSetupButtons() });
     return;
   }
 
