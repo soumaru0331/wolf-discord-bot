@@ -1,0 +1,10 @@
+node_modules
+*.db
+*.db-journal
+.env
+.git
+tests
+src
+fly.toml
+railway.toml
+Dockerfile
