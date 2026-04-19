@@ -1,12 +1,12 @@
 import type { ButtonInteraction } from 'discord.js';
 import type { GameManager } from '../game/GameManager';
 import { buildWaitingEmbed, buildSetupEmbed } from '../ui/EmbedBuilder';
-import { buildJoinLeaveButtons, buildStartButton, buildSetupButtons } from '../ui/ButtonBuilder';
+import { buildJoinLeaveButtons, buildStartButton, buildSetupComponents } from '../ui/ButtonBuilder';
 import { getAllRoles } from '../roles/RoleHandler';
 import logger from '../utils/logger';
 
 export async function handleButton(
-  interaction: ButtonInteraction,
+  interaction: ButtonInteraction | import('discord.js').StringSelectMenuInteraction,
   manager: GameManager
 ): Promise<void> {
   const guildId = interaction.guildId!;
@@ -79,7 +79,7 @@ export async function handleButton(
       session.roleComposition.set('seer', 1);
     }
     const embed = buildSetupEmbed(session);
-    await interaction.update({ embeds: [embed], components: buildSetupButtons() });
+    await interaction.update({ embeds: [embed], components: buildSetupComponents(session.roleComposition) });
     return;
   }
 
@@ -97,9 +97,17 @@ export async function handleButton(
       comp.set('werewolf', (comp.get('werewolf') ?? 1) + 1);
     } else if (customId === 'setup_wolf_remove') {
       comp.set('werewolf', Math.max(1, (comp.get('werewolf') ?? 1) - 1));
-    } else if (customId.startsWith('setup_toggle_')) {
-      const roleId = customId.replace('setup_toggle_', '');
-      comp.set(roleId, comp.get(roleId) ? 0 : 1);
+    } else if (customId === 'setup_select_village' || customId === 'setup_select_wolfside' || customId === 'setup_select_third') {
+      const selectInteraction = interaction as import('discord.js').StringSelectMenuInteraction;
+      const selected = selectInteraction.values;
+      const { getAllRoles } = await import('../roles/RoleHandler');
+      const all = getAllRoles();
+      let teamFilter: string[];
+      if (customId === 'setup_select_village') teamFilter = all.filter(r => r.team === 'village' && r.id !== 'villager').map(r => r.id);
+      else if (customId === 'setup_select_wolfside') teamFilter = all.filter(r => r.team === 'werewolf' && r.id !== 'werewolf').map(r => r.id);
+      else teamFilter = all.filter(r => !['village', 'werewolf'].includes(r.team)).map(r => r.id);
+      for (const id of teamFilter) comp.set(id, 0);
+      for (const id of selected) comp.set(id, 1);
     } else if (customId === 'setup_day_add') {
       session.settings.dayDuration = Math.min(600, session.settings.dayDuration + 60);
     } else if (customId === 'setup_day_remove') {
@@ -113,7 +121,7 @@ export async function handleButton(
         ? 30 : session.settings.voteDuration + 15;
     } else if (customId === 'setup_back') {
       const waitEmbed = buildWaitingEmbed(session);
-      await interaction.update({ embeds: [waitEmbed], components: [buildJoinLeaveButtons(), buildStartButton()] });
+      await (interaction as any).update({ embeds: [waitEmbed], components: [buildJoinLeaveButtons(), buildStartButton()] });
       return;
     } else if (customId === 'setup_confirm') {
       // Build final role list
@@ -139,7 +147,7 @@ export async function handleButton(
 
     // Re-render setup screen
     const embed = buildSetupEmbed(session);
-    await interaction.update({ embeds: [embed], components: buildSetupButtons() });
+    await interaction.update({ embeds: [embed], components: buildSetupComponents(session.roleComposition) });
     return;
   }
 

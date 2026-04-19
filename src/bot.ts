@@ -38,8 +38,8 @@ client.on(Events.InteractionCreate, async (interaction: Interaction) => {
         case 'wolflogs': return await handleWolfLogs(interaction, manager);
         case 'wolfspectate': return await handleWolfSpectate(interaction, manager);
       }
-    } else if (interaction.isButton()) {
-      await handleButton(interaction, manager);
+    } else if (interaction.isButton() || interaction.isStringSelectMenu()) {
+      await handleButton(interaction as any, manager);
     }
   } catch (err) {
     logger.error('Interaction error', { error: err });
