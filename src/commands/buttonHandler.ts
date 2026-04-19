@@ -40,8 +40,25 @@ export async function handleButton(
       return;
     }
     session.removePlayer(userId);
+    // 全員が抜けたら自動キャンセル
+    if (session.players.size === 0) {
+      manager.endGame(guildId);
+      await interaction.update({ content: '参加者がいなくなったためゲームをキャンセルしました。', embeds: [], components: [] });
+      return;
+    }
     const embed = buildWaitingEmbed(session);
     await interaction.update({ embeds: [embed], components: [buildJoinLeaveButtons(), buildStartButton()] });
+    return;
+  }
+
+  if (customId === 'cancel_game') {
+    const session = manager.getSession(guildId);
+    if (!session || session.state !== 'waiting') {
+      await interaction.reply({ content: '参加受付中のゲームがありません。', ephemeral: true });
+      return;
+    }
+    manager.endGame(guildId);
+    await interaction.update({ content: 'ゲームをキャンセルしました。', embeds: [], components: [] });
     return;
   }
 

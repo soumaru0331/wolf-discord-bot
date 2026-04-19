@@ -1,7 +1,6 @@
 node_modules
 *.db
 *.db-journal
-.env
 .git
 tests
 src

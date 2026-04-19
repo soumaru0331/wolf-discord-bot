@@ -9,7 +9,7 @@ import { handleWolfLogs } from './commands/logs';
 import { handleWolfSpectate } from './commands/spectate';
 import { handleButton } from './commands/buttonHandler';
 import logger from './utils/logger';
-import { getDb } from './db/Database';
+import { initDb } from './db/Database';
 
 const token = process.env.BOT_TOKEN;
 if (!token) {
@@ -17,15 +17,14 @@ if (!token) {
   process.exit(1);
 }
 
-// Initialize DB and GameManager
-getDb();
 export const manager = new GameManager(handlePhaseEvent);
 
 const client = new Client({
   intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages],
 });
 
-client.once(Events.ClientReady, c => {
+client.once(Events.ClientReady, async c => {
+  await initDb();
   logger.info(`Logged in as ${c.user.tag}`);
 });
 

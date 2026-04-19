@@ -15,7 +15,11 @@ export function buildJoinLeaveButtons(): ActionRowBuilder<MessageActionRowCompon
     new ButtonBuilder()
       .setCustomId('leave_game')
       .setLabel('辞退')
-      .setStyle(ButtonStyle.Secondary)
+      .setStyle(ButtonStyle.Secondary),
+    new ButtonBuilder()
+      .setCustomId('cancel_game')
+      .setLabel('ゲームをキャンセル')
+      .setStyle(ButtonStyle.Danger)
   );
 }
 
